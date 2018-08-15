@@ -1,0 +1,12 @@
+﻿  Serial.cpp
+c:\users\jsk\documents\dev_c\source\source\serial.cpp(66): warning C4267: 'argument': conversion from 'size_t' to 'DWORD', possible loss of data
+  main.cpp
+  handanalysis_render.cpp
+c:\users\jsk\documents\dev_c\source\source\handanalysis_render.cpp(170): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\jsk\documents\dev_c\source\source\handanalysis_render.cpp(171): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\jsk\documents\dev_c\source\source\handanalysis_render.cpp(174): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\users\jsk\documents\dev_c\source\source\handanalysis_render.cpp(178): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\users\jsk\documents\dev_c\source\source\handanalysis_render.cpp(181): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  evnt_handle.cpp
+c1xx : fatal error C1083: Cannot open source file: 'evnt_handle.cpp': No such file or directory
+  Generating Code...
