@@ -1,5 +1,5 @@
 
-
+//main code for the hand gesture module of Intel Real Sense- F200
 #include <windows.h>
 #include <iostream>
 #include "pxcsensemanager.h"
@@ -16,11 +16,11 @@ int main(void) {
 	Serial serial(commPortName);//this opens the com port
 	// error checking Status
 	pxcStatus sts;
-				  // initialize the util render 
+    // initialize the util render
 	HandRender *renderer = new HandRender(L"Live_feed");//
 	// create the PXCSenseManager instance
 	PXCSenseManager *psm = 0;
-	psm = PXCSenseManager::CreateInstance();//PXCsenseManager has static method CreateInstance() 
+	psm = PXCSenseManager::CreateInstance();//PXCsenseManager has static method CreateInstance()
 	if (!psm) {
 		cout<<"Unable to create the PXCSenseManager"<<endl;
 		return 1;
@@ -28,8 +28,6 @@ int main(void) {
 
 	// select the depth stream of size 640x480
 	psm->EnableStream(PXCCapture::STREAM_TYPE_DEPTH, 640, 480,60); //the third parameter is for fps
-
-	// enable hand analysis in the multimodal pipeline
 	sts = psm->EnableHand();//this fuction when called enables the hand tracking and returns the error status
 	if (sts < PXC_STATUS_NO_ERROR) {
 		cout<<"Unable to enable Hand Tracking"<<endl;
@@ -37,7 +35,7 @@ int main(void) {
 	}
 
 	// retrieve hand module if ready - called in the setup stage before AcquireFrame
-	PXCHandModule* handAnalyzer = psm->QueryHand();//get an instance of PXCHandModule   is PXCHandModule is a class of struct, can we create a pointer to a class??
+	PXCHandModule* handAnalyzer = psm->QueryHand();//get an instance of PXCHandModule
 
 	if (!psm) {
 		cout<<"Unable to retrieve hand results"<<endl;
@@ -49,8 +47,8 @@ int main(void) {
 	//HERE THE CAMERA GETS STARTED,i.e lights gets on
 	// retrieves an instance of the PXCHandData interface
 	PXCHandData* outputData = handAnalyzer->CreateOutput();
-	// retrieves an instance of the PXCHandData PXCHandConfiguration
-	PXCHandConfiguration* config = handAnalyzer->CreateActiveConfiguration();//this funciton CreateActiveConfiguration is necessary to get an instance of PXCHnadConfigurION
+	// retrieves an instance of the PXCHandData->PXCHandConfiguration
+	PXCHandConfiguration* config = handAnalyzer->CreateActiveConfiguration();
 	//MyHandler handler;//use this when event handler is used
 	//config->SubscribeGesture(&handler);//this enables the event handler
 	// enable or disable features in hand module
@@ -58,7 +56,7 @@ int main(void) {
 	config->EnableAlert(PXCHandData::AlertType::ALERT_HAND_DETECTED);
 	config->EnableAlert(PXCHandData::AlertType::ALERT_HAND_NOT_DETECTED);
 	config->EnableGesture(L"thumb_up");
-	//config->EnableGesture(L"fist"); //fist is not working fine with thumb_up and thump_down
+	//config->EnableGesture(L"fist"); //fist does not works fine with thumb_up and thump_down
 	//config->EnableGesture(L"click");
 	config->EnableGesture(L"thumb_down");
 	config->EnableGesture(L"v_sign");
@@ -74,37 +72,37 @@ int main(void) {
 
 	// stream data
 	int f = 0;
-	PXCImage *depthIm = NULL; //init depth im
+	PXCImage *depthIm = NULL; //init depth image
 	while (psm->AcquireFrame(false) >= PXC_STATUS_NO_ERROR) {
 
 		//do the event register thing here.
 		//RUNS OVER THIS WHILE LOOP AGAIN AND AGAIN
 		// increment frame counter since a frame is acquired
-		
-		//update the output data to the latest availible
+
+		//update the output data to the latest availible frame
 		outputData->Update();
 
 		// create data structs for storing data
 		PXCHandData::GestureData gestureData;//handdata has the work to provide the data interface
-		PXCHandData::JointData nodes[NUM_HANDS][PXCHandData::NUMBER_OF_JOINTS] = {};//if i am not wrong this is a two d empty array
+		PXCHandData::JointData nodes[NUM_HANDS][PXCHandData::NUMBER_OF_JOINTS] = {};//2D empty array
 		pxcCHAR gestures[NUM_HANDS][PXCHandData::MAX_NAME_SIZE] = {};//same here
 		PXCHandData::BodySideType handSide[NUM_HANDS] = { PXCHandData::BODY_SIDE_UNKNOWN };//initially both th handSide element represent 0 i.e body side unknown
-//		PXCHandData::FingerType fin;
-//		PXCHandData::FingerData data;
-//		PXCHandData::IHand::QueryFingerData;
-		
+        //PXCHandData::FingerType fin;
+        //PXCHandData::FingerData data;
+        //PXCHandData::IHand::QueryFingerData;
+
 		//we have just created the data structures above to store the data of hand tracking data
 		// iterate through hands
-		//pxcUID handID;   //i have commented this since it gave an error of unreferenced 
+
 		pxcU16 numOfHands = outputData->QueryNumberOfHands();//checks for the numeber of hands visible
-//get the joint data
+        //get the joint data
 		for (pxcU16 i = 0; i < numOfHands; i++)
 		{
-			// get hand joints by time of appearence
+            // get hand joints by time of appearence
 			PXCHandData::IHand* handData;
 			if (outputData->QueryHandData(PXCHandData::ACCESS_ORDER_BY_TIME, i, handData) == PXC_STATUS_NO_ERROR)
 			{
-				// iterate through Joints and get joint data 
+				// iterate through Joints and get joint data
 				for (int j = 0; j < PXCHandData::NUMBER_OF_JOINTS; j++)
 				{
       					handData->QueryTrackedJoint((PXCHandData::JointType)j, nodes[i][j]);
@@ -116,16 +114,16 @@ int main(void) {
 			//}
 			//pxcUID l = handData->QueryUniqueId();
 			//cout << l << endl;
-			
+
 		}//why is the above QueryUniqueId not working properly
-		
-		
-		
+
+
+
 		// iterate through fired gestures
 		unsigned int k = outputData->QueryFiredGesturesNumber();//returns the number of gestures fired!
 		for (unsigned int i = 0; i < k; i++)
 		{
-			// initialize data	
+			// initialize data
 			wmemset(gestures[i], 0, sizeof(gestures[i]));
 			handSide[i] = PXCHandData::BODY_SIDE_UNKNOWN;
 			// get fired gesture data
@@ -141,14 +139,14 @@ int main(void) {
 					if (!handData->QueryBodySide() == PXCHandData::BODY_SIDE_UNKNOWN)
 					{
 						wmemcpy_s(gestures[i], sizeof(gestureData.name), gestureData.name, sizeof(gestureData.name));
-						handSide[i] = handData->QueryBodySide();//here is the side of body detected
+						handSide[i] = handData->QueryBodySide();//side of body detected here
 						//cout << handSide[i] << endl;
 					}
 				}
 			}
 		}
 
-		//cout << wcscmp(gestureData.name, L"thumb_up") << endl;
+		/*cout << wcscmp(gestureData.name, L"thumb_up") << endl;
 		/*if (!wcscmp(gestureData.name, L"thumb_up"))
 			//if (outputData->IsGestureFired(L"thumb_up", gestureData))
 		{
@@ -170,7 +168,7 @@ int main(void) {
 			serial.write("3");
 			//cout << "thumbs down huh!" << endl;
 			cout << "thumb_down" << endl;
-			
+
 		}
 
 
@@ -192,15 +190,15 @@ int main(void) {
 	//	else if (!wcscmp(gestureData.name, L"swipe_left"))
 		//{
 			//cout << "swipe_left" << endl;
-		//}
+		//}*/
 
-		
+
 		if (outputData->IsGestureFiredByHand(L"thumb_up", gestureData.handId, gestureData))
 		{
-			
+
 			serial.write("1"); //move forward
 			cout << "thumb_up" << endl;
-			
+
 		}
 
 		else if (outputData->IsGestureFired(L"v_sign", gestureData))
@@ -223,7 +221,7 @@ int main(void) {
 		{
 			serial.write("3"); // turn right 30 degree
 			cout << "swip_right" << endl;
-			
+
 		}
 		else if (outputData->IsGestureFired(L"swipe_left", gestureData))
 		{
@@ -238,10 +236,10 @@ int main(void) {
 		{
 			cout << "swipe_up" << endl;
 		}
-		// iterate through Alerts 
+		// iterate through Alerts
 		//house keeping stuff to monitor alerts
 		PXCHandData::AlertData alertData;
-		
+
 		for (int i = 0; i <outputData->QueryFiredAlertsNumber(); i++)
 		{
 			pxcStatus sts = outputData->QueryFiredAlertData(i, alertData);
@@ -274,14 +272,14 @@ int main(void) {
 		// render the frame
 		if (!renderer->RenderFrame(depthIm, handAnalyzer, nodes, gestures, handSide))
 			break;
-		//HERE WE GET THE NEW FRAME FROM THE RENDER FUNCTION 
+		//HERE WE GET THE NEW FRAME FROM THE RENDER FUNCTION
 		// release or unlock the current frame to go fetch the next frame
 		psm->ReleaseFrame();
 		//HERE THE SAME FRAME IS RELEASED.
 	}
-	delete renderer;//whenever that is a new there is a delete for it.
-					//delete the configuration
-//	config->UnsubscribeGesture(&handler);
+	delete renderer;
+    //delete the configuration
+    //config->UnsubscribeGesture(&handler);
 	config->Release();
 	// delete the HandRender instance
 	//	renderer->Release();

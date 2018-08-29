@@ -24,7 +24,7 @@ Copyright(c) 2013-2014 Intel Corporation. All Rights Reserved.
 static WCHAR *HandLabels[] = {
 	L"LEFT HAND",
 	L"RIGHT HAND"
-};//very scary way to represent an array!
+};
 
 int prevNum = 0;
 int curNum = 0;
@@ -126,7 +126,7 @@ bool HandRender::RenderFrame(PXCImage *image, PXCHandModule *detector,
 }//THIS RENDERS THE FIRSTFRAME, all time this gives the new frame.
 
 void HandRender::DrawMore(HDC hdc, double sx, double sy) {
-	HPEN red = CreatePen(PS_SOLID, 4, COLOR_RED);//IF I AM NOT WRONG THIS IS WHERE THE FINGER TIPS, THE POINTS ARE DRAWN.
+	HPEN red = CreatePen(PS_SOLID, 4, COLOR_RED);//THIS IS WHERE THE FINGER TIPS, THE POINTS ARE DRAWN.
 	SelectObject(hdc, red);
 	for (std::list<Line>::iterator itrl = m_lines.begin(); itrl != m_lines.end(); itrl++) {
 		MoveToEx(hdc, (int)(itrl->x0*sx), (int)(itrl->y0*sy), NULL);
